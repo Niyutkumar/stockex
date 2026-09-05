@@ -1,0 +1,25 @@
+# Python virtual environment — never commit this
+.venv/
+venv/
+
+# Python bytecode caches
+__pycache__/
+*.py[cod]
+
+# Environment variables and secrets — never commit these
+.env
+.env.local
+
+# Editor / OS noise
+.vscode/
+.idea/
+.DS_Store
+
+# Test and tooling caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
