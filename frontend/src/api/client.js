@@ -5,7 +5,11 @@
  * like `getPortfolio()` and never touch fetch directly.
  */
 
-const BASE = "/api";
+// In development Vite proxies /api to the backend, so a relative path is
+// all that is needed. In production the front end is a static site served
+// from a different host than the API, so the full URL is supplied at build
+// time through VITE_API_BASE.
+const BASE = (import.meta.env.VITE_API_BASE || "") + "/api";
 const TOKEN_KEY = "stockex.token";
 
 export function getToken() {

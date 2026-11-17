@@ -1,0 +1,54 @@
+# Render blueprint. Creates both services from this file, so the setup is
+# in version control rather than clicked into a dashboard.
+#
+# The database is NOT defined here on purpose: Render's free Postgres
+# expires 30 days after creation, which would kill a portfolio link a
+# month after it goes on a CV. Use Neon's free tier instead (1 GB, no
+# card, no expiry) and paste its URL into DATABASE_URL below.
+
+services:
+  # ---------- API ----------
+  - type: web
+    name: stockex-api
+    runtime: python
+    plan: free
+    region: singapore          # closest Render region to India
+    buildCommand: pip install -r requirements.txt
+    # Migrations run on every deploy. Alembic records which have been
+    # applied, so repeating this is safe and does nothing on an unchanged
+    # schema.
+    preDeployCommand: alembic upgrade head
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.1"
+      - key: DATABASE_URL
+        sync: false            # paste the Neon connection string
+      - key: SECRET_KEY
+        generateValue: true    # Render generates and stores it
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "1440"
+      - key: CORS_ORIGINS
+        # The browser blocks the front end from calling the API unless the
+        # API names it here. Must match the static site's URL exactly.
+        value: https://stockex-web.onrender.com
+
+  # ---------- front end ----------
+  - type: web
+    name: stockex-web
+    runtime: static
+    plan: free                 # static sites do not spin down
+    region: singapore
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_BASE
+        value: https://stockex-api.onrender.com
+    routes:
+      # Single-page app: the router owns the URLs, so any path that is not
+      # a real file must serve index.html. Without this, refreshing on
+      # /transactions returns a 404.
+      - type: rewrite
+        source: /*
+        destination: /index.html
