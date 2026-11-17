@@ -1,0 +1,33 @@
+# Makes the project installable, which puts `app` on the import path for
+# good. Without this, scripts have to be run as `python -m scripts.name`
+# because Python searches the script's own folder rather than the project
+# root. With it, `pip install -e .` once and imports work from anywhere.
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stockex"
+version = "0.1.0"
+description = "Portfolio tracker for the Indian stock market (NSE)"
+requires-python = ">=3.12"
+
+[tool.setuptools]
+packages = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Puts the project root on the import path, so `pytest` finds `app`.
+# Without it, only `python -m pytest` works — because the -m form adds
+# the current directory and the bare command does not. Fixing it here
+# means the documented command actually works for anyone who clones this.
+pythonpath = ["."]
+addopts = "--strict-markers"
+
+[tool.ruff]
+line-length = 90
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

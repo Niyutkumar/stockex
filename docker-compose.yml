@@ -1,0 +1,51 @@
+# The whole stack locally: database, API, front end.
+#
+#   cp .env.example .env     (set SECRET_KEY)
+#   docker compose up --build
+#
+# Front end on http://localhost:5173, API docs on http://localhost:8000/docs
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: stockex
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-stockex-local-only}
+      POSTGRES_DB: stockex
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # The API must not start before the database can answer, otherwise
+      # the migration races the server coming up and fails intermittently.
+      test: ["CMD-SHELL", "pg_isready -U stockex -d stockex"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://stockex:${POSTGRES_PASSWORD:-stockex-local-only}@db:5432/stockex
+      SECRET_KEY: ${SECRET_KEY:?set SECRET_KEY in .env}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-1440}
+    # Migrate, seed, then serve. Both steps are safe to repeat, so a
+    # restart does not duplicate anything.
+    command: >
+      sh -c "alembic upgrade head &&
+             python -m scripts.seed_stocks &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+
+  web:
+    build: ./frontend
+    depends_on:
+      - api
+    ports:
+      - "5173:80"
+
+volumes:
+  pgdata:

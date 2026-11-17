@@ -26,3 +26,6 @@ htmlcov/
 
 # Personal working notes — local only, not part of the project
 docs/HANDOFF.md
+
+# Transfer archive — extract and delete
+stockex-frontend.tar.gz

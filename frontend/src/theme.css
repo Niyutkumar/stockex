@@ -1,0 +1,137 @@
+/* Design tokens for both themes.
+ *
+ * The bare :root block holds the complete LIGHT palette. The two blocks
+ * after it redefine only the tokens for dark: one for the viewer's OS
+ * setting, one for an explicit choice made with the toggle. Declaring
+ * both means the toggle wins in either direction, and a colour is never
+ * defined only inside a media query — which is the classic bug that
+ * leaves one theme's text on the other theme's background.
+ */
+
+:root {
+  color-scheme: light;
+
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --raised: #eef1f9;
+  --rule: #e6e9f2;
+
+  --ink: #141829;
+  --ink-2: #5a6075;
+  --ink-3: #8a90a6;
+
+  --accent: #4a5fe0;
+  --accent-soft: #6b7ce8;
+  --accent-wash: rgba(74, 95, 224, 0.10);
+
+  /* Deep forest green, not mint: a bright green on white measures about
+     2:1 and is effectively unreadable. */
+  --gain: #047857;
+  --loss: #c81e1e;
+  --gain-chip: #e3f5ec;
+  --loss-chip: #fde8e8;
+
+  --series: #4a5fe0;
+  --series-fill-top: rgba(74, 95, 224, 0.22);
+  --shadow: 0 1px 2px rgba(20, 24, 41, 0.06);
+
+  /* Logo bars, light version */
+  --logo-1: #7a88ec;
+  --logo-2: #4a5fe0;
+  --logo-3: #047857;
+
+  --sans: "Manrope", "Helvetica Neue", Arial, sans-serif;
+  --r: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --bg: #09090b;
+    --card: #111116;
+    --raised: #16161d;
+    --rule: #23232c;
+
+    --ink: #f2f3f5;
+    --ink-2: #9a9aa6;
+    --ink-3: #6b6b78;
+
+    --accent: #5b76f7;
+    --accent-soft: #8b9dfb;
+    --accent-wash: rgba(91, 118, 247, 0.16);
+
+    --gain: #3ddc84;
+    --loss: #ff6b6b;
+    --gain-chip: rgba(61, 220, 132, 0.14);
+    --loss-chip: rgba(255, 107, 107, 0.14);
+
+    --series: #5b76f7;
+    /* Nearly twice the opacity of the light fill. A gradient that reads
+       clearly on white disappears on near-black. */
+    --series-fill-top: rgba(91, 118, 247, 0.40);
+    --shadow: none;
+
+    --logo-1: #8b9dfb;
+    --logo-2: #5b76f7;
+    --logo-3: #3ddc84;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #09090b;
+  --card: #111116;
+  --raised: #16161d;
+  --rule: #23232c;
+
+  --ink: #f2f3f5;
+  --ink-2: #9a9aa6;
+  --ink-3: #6b6b78;
+
+  --accent: #5b76f7;
+  --accent-soft: #8b9dfb;
+  --accent-wash: rgba(91, 118, 247, 0.16);
+
+  --gain: #3ddc84;
+  --loss: #ff6b6b;
+  --gain-chip: rgba(61, 220, 132, 0.14);
+  --loss-chip: rgba(255, 107, 107, 0.14);
+
+  --series: #5b76f7;
+  --series-fill-top: rgba(91, 118, 247, 0.40);
+  --shadow: none;
+
+  --logo-1: #8b9dfb;
+  --logo-2: #5b76f7;
+  --logo-3: #3ddc84;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.num { font-variant-numeric: tabular-nums; }
+.gain { color: var(--gain); }
+.loss { color: var(--loss); }
+.muted { color: var(--ink-2); }
+
+button { font-family: inherit; }
+a { color: var(--accent); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
