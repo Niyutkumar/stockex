@@ -44,7 +44,10 @@ export default function Transactions() {
       <div className="workhead">
         <div>
           <h1>Transactions</h1>
-          <p>Append-only ledger{rows ? ` · ${rows.length} entries` : ""}</p>
+          <p>
+          Append-only ledger
+          {rows ? ` · ${rows.length} entr${rows.length === 1 ? "y" : "ies"}` : ""}
+        </p>
         </div>
       </div>
 
